@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Juego de Triki Didáctico</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: #d0eaff; /* fondo azul pastel */
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      color: #2a75bb;
+      margin-top: 30px;
+      font-size: 2.5em;
+    }
+
+    .game {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      gap: 10px;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .cell {
+      width: 100px;
+      height: 100px;
+      background-color: #ffffffcc;
+      border: 3px solid #5ca9e9;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5em;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .cell:hover {
+      background-color: #bae3ff;
+      transform: scale(1.05);
+    }
+
+    .cell.x {
+      color: #0077cc;
+    }
+
+    .cell.o {
+      color: #00aaff;
+    }
+
+    #message {
+      margin-top: 20px;
+      font-size: 1.5em;
+      color: #1d3557;
+    }
+
+    #restartButton {
+      margin-top: 20px;
+      padding: 12px 25px;
+      font-size: 1em;
+      background-color: #72c3fc;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    #restartButton:hover {
+      background-color: #479fd8;
+    }
+
+    footer {
+      margin-top: 40px;
+      color: #555;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎯 ¡Juega Triki y Aprende! 😊</h1>
+
+  <div class="game">
+    <div class="cell" data-cell></div>
+    <div class="cell" data-cell></div>
+    <div class="cell" data-cell></div>
+    <div class="cell" data-cell></div>
+    <div class="cell" data-cell></div>
+    <div class="cell" data-cell></div>
+    <div class="cell" data-cell></div>
+    <div class="cell" data-cell></div>
+    <div class="cell" data-cell></div>
+  </div>
+
+  <h2 id="message">Turno de: X</h2>
+  <button id="restartButton">🔄 Reiniciar Juego</button>
+
+  <footer>
+    <p>Hecho con 💙 para aprender jugando</p>
+  </footer>
+
+  <script>
+    const cells = document.querySelectorAll('[data-cell]');
+    const message = document.getElementById('message');
+    const restartButton = document.getElementById('restartButton');
+
+    let turn = 'X';
+    let board = Array(9).fill(null);
+    let gameOver = false;
+
+    const winningCombos = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6]
+    ];
+
+    function handleClick(e) {
+      const index = Array.from(cells).indexOf(e.target);
+
+      if (board[index] || gameOver) return;
+
+      board[index] = turn;
+      e.target.textContent = turn;
+      e.target.classList.add(turn.toLowerCase());
+
+      if (checkWin(turn)) {
+        message.textContent = `🎉 ¡${turn} gana! ¡Buen trabajo!`;
+        gameOver = true;
+        return;
+      }
+
+      if (board.every(cell => cell)) {
+        message.textContent = '🤝 ¡Empate! ¡Intenta de nuevo!';
+        gameOver = true;
+        return;
+      }
+
+      turn = turn === 'X' ? 'O' : 'X';
+      message.textContent = `Turno de: ${turn}`;
+    }
+
+    function checkWin(player) {
+      return winningCombos.some(combo =>
+        combo.every(index => board[index] === player)
+      );
+    }
+
+    function restartGame() {
+      board = Array(9).fill(null);
+      turn = 'X';
+      gameOver = false;
+      message.textContent = 'Turno de: X';
+      cells.forEach(cell => {
+        cell.textContent = '';
+        cell.classList.remove('x', 'o');
+      });
+    }
+
+    cells.forEach(cell => {
+      cell.addEventListener('click', handleClick);
+    });
+
+    restartButton.addEventListener('click', restartGame);
+  </script>
+</body>
+</html>
+
